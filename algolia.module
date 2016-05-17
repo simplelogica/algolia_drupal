@@ -1,0 +1,67 @@
+<?php
+
+/**
+ * Implements `hook_xautoload()`.
+ * Configures the Algolia Search library so it can be autoloaded by the
+ * XAutoload module.
+ */
+function algolia_xautoload($adapter) {
+  $algolia_client_path = realpath(libraries_get_path('algoliasearch'));
+  $adapter->absolute()->composerJson("${algolia_client_path}/composer.json");
+}
+
+/**
+ * Implements `hook_node_insert()`.
+ * Sends new content to Algolia after creation (only if published).
+ */
+function algolia_node_insert($node) {
+  try {
+    if ($node->status == NODE_PUBLISHED) {
+      Drupal\algolia\AlgoliaAdapter::addObject($node);
+    }
+  } catch (AlgoliaSearch\AlgoliaException $e) {
+    watchdog_exception("algolia", $e);
+  }
+}
+
+/**
+ * Implements `hook_node_update()`.
+ * Sends updated content to Algolia if published, or removes it from the index
+ * if unpublished.
+ */
+function algolia_node_update($node) {
+  try {
+    list($from, $to) = [$node->original->status, $node->status];
+    // We are only interested in unpublications and changes to published contents.
+    if ($from == NODE_PUBLISHED && $to == NODE_NOT_PUBLISHED) {
+      Drupal\algolia\AlgoliaAdapter::deleteObject($node); // The node is being unpublished
+    } elseif ($from == NODE_NOT_PUBLISHED && $to == NODE_PUBLISHED) {
+      Drupal\algolia\AlgoliaAdapter::addObject($node); // The node is being published
+    } elseif ($from == NODE_PUBLISHED && $to == NODE_PUBLISHED) {
+      Drupal\algolia\AlgoliaAdapter::updateObject($node); // The node is being updated
+    }
+  } catch(AlgoliaSearch\AlgoliaException $e) {
+    watchdog_exception("algolia", $e);
+  }
+}
+
+/**
+ * Implements `hook_node_delete()`.
+ * Removes content from Algolia when deleted.
+ */
+function algolia_node_delete($node) {
+  try {
+    Drupal\algolia\AlgoliaAdapter::deleteObject($node);
+  } catch(AlgoliaSearch\AlgoliaException $e) {
+    watchdog_exception("algolia", $e);
+  }
+}
+
+/**
+ * Implements `hook_cron()`.
+ * Updates index settings and indexes all content into Algolia.
+ */
+function algolia_cron() {
+  Drupal\algolia\AlgoliaAdapter::updateIndexSettings();
+  Drupal\algolia\Workers\IndexWorker::index();
+}

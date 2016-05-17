@@ -1,0 +1,7 @@
+name = Algolia
+description = Provides a bridge between the Algolia Client Library and Drupal
+core = 7.x
+version = 7.x-1.0
+package = Algolia
+
+dependencies[] = xautoload
