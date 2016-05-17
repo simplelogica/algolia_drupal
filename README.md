@@ -11,7 +11,7 @@ a full indexation on every cron run.
 
 1. Download the Algolia PHP client into the _libraries_ folder of your Drupal
 application and rename its folder to _algoliasearch_.
-2. Download this module into your _modules_ directory. And enable it with the
+2. Download this module into your _modules_ directory: `git clone https://github.com/simplelogica/algolia_drupal.git sites/all/modules/custom/algolia`. And enable it with the
 command `drush en algolia`.
 3. Create your own customization module to configure indexes, content-types and
 serializations (see next section).
