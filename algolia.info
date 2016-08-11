@@ -5,3 +5,4 @@ version = 7.x-1.0
 package = Algolia
 
 dependencies[] = xautoload
+dependencies[] = libraries
