@@ -7,6 +7,11 @@ This module hooks automatically into the node lifecycle to trigger a sinchroniza
 when a node is created, updated or deleted.  It also sets a hook to trigger
 a full indexation on every cron run.
 
+1. [Installation](#installation)
+2. [Setup](#setup)
+3. [Customization](#customization)
+4. [Usage](#usage)
+
 ## Installation
 
 1. Download the Algolia PHP client into the _libraries_ folder of your Drupal
@@ -37,7 +42,7 @@ $conf["algolia_accounts"] = [
 ];
 ```
 
-## Extension
+## Customization
 
 This module is meant to provide a generic functionality that can be extended by
 other modules to indicate which indexes exist, which content-types belong to each
@@ -93,3 +98,17 @@ function my_serialization_callback($node) {
   ];
 }
 ```
+
+## Usage
+
+This module automatically hooks into the node lifecycle and updates Algolia
+indexes on node insertions, deletions and updates. Algolia also triggers a
+reindexation on every cron run.
+
+Should you wish to update indexes content or settings manually, you can use the
+following drush commands:
+* `drush algolia-update-index-settings`: updates the settings (such as
+`attributesToIndex` or `slaves`) for all defined indexes.
+* `drush algolia-index-content`: reindexes all applicable content. You can also
+add the `--type=CONTENT-TYPE-MACHINE-NAME` option to reindex only the content
+of the given content-type.
