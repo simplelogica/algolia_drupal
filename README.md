@@ -111,4 +111,5 @@ following drush commands:
 `attributesToIndex` or `slaves`) for all defined indexes.
 * `drush algolia-index-content`: reindexes all applicable content. You can also
 add the `--type=CONTENT-TYPE-MACHINE-NAME` option to reindex only the content
-of the given content-type.
+of the given content-type. Another useful option is `--uri=http://example.com:8888`
+to generate the links with the proper base URL.
